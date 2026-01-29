@@ -50,7 +50,7 @@ export default function ContactPage() {
       quickLinks: "Quick Links",
       followUs: "Follow Us",
       copyright: "© 2082 Ashish Sharma. All rights reserved.",
-      developedBy: "Website Designed & Developed by: Genesis Web Technology",
+      developedBy: "Website Designed & Developed by: Illuminati Technology",
       constituency: "Kapilvastu-1",
     },
     np: {
@@ -86,18 +86,51 @@ export default function ContactPage() {
       quickLinks: "द्रुत लिङ्कहरू",
       followUs: "हामीलाई फलो गर्नुहोस्",
       copyright: "© २०८२ आशिष शर्मा। सर्वाधिकार सुरक्षित।",
-      developedBy: "वेबसाइट डिजाइन र विकास: Genesis Web Technology",
+      developedBy: "वेबसाइट डिजाइन र विकास: Illuminati Technology",
       constituency: "कपिलवस्तु-१",
     },
   };
 
   const text = t[language];
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
-    alert(language === 'en' ? 'Message sent successfully!' : 'सन्देश सफलतापूर्वक पठाइयो!');
-    setFormData({ name: '', email: '', phone: '', profession: '', location: '', message: '' });
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      // Create message object with timestamp and unique ID
+      const newMessage = {
+        id: Date.now(),
+        ...formData,
+        submittedAt: new Date().toISOString(),
+        status: 'unread'
+      };
+
+      // Get existing messages from localStorage
+      const existingMessages = JSON.parse(localStorage.getItem('cms_contact_messages') || '[]');
+
+      // Add new message to the beginning of the array
+      existingMessages.unshift(newMessage);
+
+      // Save back to localStorage
+      localStorage.setItem('cms_contact_messages', JSON.stringify(existingMessages));
+
+      // Show success message
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', phone: '', profession: '', location: '', message: '' });
+
+      // Clear success message after 5 seconds
+      setTimeout(() => setSubmitStatus(null), 5000);
+    } catch (error) {
+      console.error('Error saving message:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -263,8 +296,41 @@ export default function ContactPage() {
                     required
                   ></textarea>
                 </div>
-                <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                  {text.submitBtn}
+                {submitStatus === 'success' && (
+                  <div style={{
+                    padding: '12px 16px',
+                    marginBottom: '20px',
+                    backgroundColor: '#d4edda',
+                    border: '1px solid #c3e6cb',
+                    borderRadius: '8px',
+                    color: '#155724',
+                    fontSize: '14px'
+                  }}>
+                    {language === 'en' ? '✓ Message sent successfully! We will get back to you soon.' : '✓ सन्देश सफलतापूर्वक पठाइयो! हामी चाँडै तपाईंलाई सम्पर्क गर्नेछौं।'}
+                  </div>
+                )}
+                {submitStatus === 'error' && (
+                  <div style={{
+                    padding: '12px 16px',
+                    marginBottom: '20px',
+                    backgroundColor: '#f8d7da',
+                    border: '1px solid #f5c6cb',
+                    borderRadius: '8px',
+                    color: '#721c24',
+                    fontSize: '14px'
+                  }}>
+                    {language === 'en' ? '✗ Failed to send message. Please try again.' : '✗ सन्देश पठाउन असफल। कृपया पुन: प्रयास गर्नुहोस्।'}
+                  </div>
+                )}
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{ width: '100%', opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting
+                    ? (language === 'en' ? 'Sending...' : 'पठाउँदै...')
+                    : text.submitBtn}
                 </button>
               </form>
             </div>

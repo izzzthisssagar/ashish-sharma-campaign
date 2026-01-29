@@ -117,6 +117,7 @@ export default function Footer({ site }) {
 
         <div className="footerBottom">
           <div className="footerCopyright">{t.footer.copyright}</div>
+          <div className="footerDevelopedBy">{t.footer.developedBy}</div>
         </div>
       </div>
     </footer>

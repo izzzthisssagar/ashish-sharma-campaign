@@ -42,7 +42,7 @@ export default function AboutPage() {
       quickLinks: "Quick Links",
       followUs: "Follow Us",
       copyright: "© 2082 Ashish Sharma. All rights reserved.",
-      developedBy: "Website Designed & Developed by: Genesis Web Technology",
+      developedBy: "Website Designed & Developed by: Illuminati Technology",
       constituency: "Kapilvastu-1",
     },
     np: {
@@ -78,7 +78,7 @@ export default function AboutPage() {
       quickLinks: "द्रुत लिङ्कहरू",
       followUs: "हामीलाई फलो गर्नुहोस्",
       copyright: "© २०८२ आशिष शर्मा। सर्वाधिकार सुरक्षित।",
-      developedBy: "वेबसाइट डिजाइन र विकास: Genesis Web Technology",
+      developedBy: "वेबसाइट डिजाइन र विकास: Illuminati Technology",
       constituency: "कपिलवस्तु-१",
     },
   };

@@ -48,6 +48,7 @@ export default function AdminDashboard() {
     featured: false,
   });
   const [searchTerm, setSearchTerm] = useState("");
+  const [messages, setMessages] = useState([]);
 
   // Check authentication on mount
   useEffect(() => {
@@ -85,7 +86,31 @@ export default function AdminDashboard() {
       };
       setContent(loadedContent);
     }
+
+    // Load contact messages
+    const savedMessages = localStorage.getItem("cms_contact_messages");
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    }
   }, [isAuthenticated]);
+
+  // Function to mark message as read
+  const markMessageAsRead = (messageId) => {
+    const updatedMessages = messages.map(msg =>
+      msg.id === messageId ? { ...msg, status: 'read' } : msg
+    );
+    setMessages(updatedMessages);
+    localStorage.setItem('cms_contact_messages', JSON.stringify(updatedMessages));
+  };
+
+  // Function to delete message
+  const deleteMessage = (messageId) => {
+    if (window.confirm('Are you sure you want to delete this message?')) {
+      const updatedMessages = messages.filter(msg => msg.id !== messageId);
+      setMessages(updatedMessages);
+      localStorage.setItem('cms_contact_messages', JSON.stringify(updatedMessages));
+    }
+  };
 
   // Handle login
   const handleLogin = (e) => {
@@ -271,10 +296,15 @@ export default function AdminDashboard() {
     { id: "gallery", label: "Gallery", labelNp: "ग्यालरी", icon: "🖼️", color: "#8b5cf6" },
   ];
 
-  const sidebarItems = [
+  // Calculate unread messages count
+  const unreadCount = messages?.filter(msg => msg.status === 'unread').length || 0;
+
+  // Generate sidebar items dynamically to handle async state
+  const getSidebarItems = () => [
     { id: "dashboard", label: "Dashboard", icon: "📊" },
     { id: "create", label: isEditing ? "Edit Content" : "Create New", icon: isEditing ? "✏️" : "➕" },
     { id: "content", label: "All Content", icon: "📋" },
+    { id: "messages", label: `Messages${unreadCount > 0 ? ` (${unreadCount})` : ''}`, icon: "💬" },
     { id: "settings", label: "Settings", icon: "⚙️" },
   ];
 
@@ -378,7 +408,7 @@ export default function AdminDashboard() {
         </div>
 
         <nav className={styles.sidebarNav}>
-          {sidebarItems.map((item) => (
+          {getSidebarItems().map((item) => (
             <button
               key={item.id}
               className={`${styles.navItem} ${activeTab === item.id ? styles.navItemActive : ""}`}
@@ -905,6 +935,161 @@ export default function AdminDashboard() {
                 )}
               </div>
             </form>
+          </div>
+        )}
+
+        {/* Messages View */}
+        {activeTab === "messages" && (
+          <div className={styles.contentSection}>
+            <div className={styles.contentHeader}>
+              <h3 style={{ color: '#fff', fontSize: '20px', fontWeight: '600' }}>
+                💬 Contact Messages ({messages.length})
+              </h3>
+              {unreadCount > 0 && (
+                <span style={{
+                  background: '#ef4444',
+                  color: '#fff',
+                  padding: '4px 12px',
+                  borderRadius: '20px',
+                  fontSize: '13px',
+                  fontWeight: '600'
+                }}>
+                  {unreadCount} unread
+                </span>
+              )}
+            </div>
+
+            {messages.length === 0 ? (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>📭</div>
+                <p className={styles.emptyText}>No messages yet.</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    style={{
+                      background: message.status === 'unread' ? 'rgba(0, 149, 246, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '12px',
+                      padding: '20px',
+                      border: message.status === 'unread' ? '1px solid rgba(0, 149, 246, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                      position: 'relative'
+                    }}
+                  >
+                    {message.status === 'unread' && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '15px',
+                        right: '15px',
+                        background: '#0095f6',
+                        color: '#fff',
+                        padding: '3px 10px',
+                        borderRadius: '10px',
+                        fontSize: '11px',
+                        fontWeight: '600'
+                      }}>
+                        NEW
+                      </span>
+                    )}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                      <div>
+                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '3px' }}>Name</div>
+                        <div style={{ color: '#fff', fontWeight: '600' }}>{message.name}</div>
+                      </div>
+                      <div>
+                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '3px' }}>Email</div>
+                        <div style={{ color: '#0095f6' }}>
+                          <a href={`mailto:${message.email}`} style={{ color: '#0095f6' }}>{message.email}</a>
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '3px' }}>Phone</div>
+                        <div style={{ color: '#fff' }}>{message.phone || 'Not provided'}</div>
+                      </div>
+                      <div>
+                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '3px' }}>Location</div>
+                        <div style={{ color: '#fff' }}>{message.location || 'Not provided'}</div>
+                      </div>
+                      <div>
+                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '3px' }}>Profession</div>
+                        <div style={{ color: '#fff' }}>{message.profession || 'Not provided'}</div>
+                      </div>
+                      <div>
+                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '3px' }}>Submitted</div>
+                        <div style={{ color: '#fff' }}>{new Date(message.submittedAt).toLocaleString()}</div>
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '15px' }}>
+                      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '5px' }}>Message</div>
+                      <div style={{
+                        color: '#fff',
+                        background: 'rgba(0,0,0,0.2)',
+                        padding: '15px',
+                        borderRadius: '8px',
+                        lineHeight: '1.6',
+                        whiteSpace: 'pre-wrap'
+                      }}>
+                        {message.message}
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      {message.status === 'unread' && (
+                        <button
+                          onClick={() => markMessageAsRead(message.id)}
+                          style={{
+                            background: 'rgba(16, 185, 129, 0.2)',
+                            color: '#10b981',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '500'
+                          }}
+                        >
+                          ✓ Mark as Read
+                        </button>
+                      )}
+                      <a
+                        href={`mailto:${message.email}?subject=Re: Contact from Campaign Website`}
+                        style={{
+                          background: 'rgba(0, 149, 246, 0.2)',
+                          color: '#0095f6',
+                          border: 'none',
+                          padding: '8px 16px',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          textDecoration: 'none'
+                        }}
+                      >
+                        ✉️ Reply
+                      </a>
+                      <button
+                        onClick={() => deleteMessage(message.id)}
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.2)',
+                          color: '#ef4444',
+                          border: 'none',
+                          padding: '8px 16px',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '13px',
+                          fontWeight: '500'
+                        }}
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

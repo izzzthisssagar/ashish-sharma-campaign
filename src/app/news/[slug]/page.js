@@ -36,7 +36,8 @@ export default function NewsDetailPage() {
       footerText: "Independent Candidate for House of Representatives",
       constituency: "Kapilvastu-1",
       symbol: "Election Symbol: Jeep",
-      copyright: "© 2025 Ashish Sharma. All rights reserved."
+      copyright: "© 2082 Ashish Sharma. All rights reserved.",
+      developedBy: "Website Designed & Developed by: Illuminati Technology"
     },
     np: {
       logo: "आशीष",
@@ -61,7 +62,8 @@ export default function NewsDetailPage() {
       footerText: "प्रतिनिधि सभाका लागि स्वतन्त्र उम्मेदवार",
       constituency: "कपिलवस्तु-१",
       symbol: "चुनाव चिन्ह: जीप",
-      copyright: "© २०२५ आशीष शर्मा। सर्वाधिकार सुरक्षित।"
+      copyright: "© २०८२ आशीष शर्मा। सर्वाधिकार सुरक्षित।",
+      developedBy: "वेबसाइट डिजाइन र विकास: Illuminati Technology"
     }
   };
 
@@ -205,7 +207,7 @@ export default function NewsDetailPage() {
             </div>
           </div>
           <div className="footer-bottom">
-            <p>{t.copyright}</p>
+            <p>{t.copyright} | {t.developedBy}</p>
           </div>
         </div>
       </footer>

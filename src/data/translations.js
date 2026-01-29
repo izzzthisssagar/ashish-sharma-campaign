@@ -67,6 +67,7 @@ export const translations = {
       statusLabel: "Status",
       statusValue: "Independent Candidate",
       copyright: "© 2082 Ashish Sharma. All rights reserved.",
+      developedBy: "Website Designed & Developed by: Illuminati Technology",
     },
 
     // Contact
@@ -158,6 +159,7 @@ export const translations = {
       statusLabel: "स्थिति",
       statusValue: "स्वतन्त्र उम्मेदवार",
       copyright: "© २०८२ आशीष शर्मा। सर्वाधिकार सुरक्षित।",
+      developedBy: "वेबसाइट डिजाइन र विकास: Illuminati Technology",
     },
 
     // Contact
